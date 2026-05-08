@@ -45,4 +45,4 @@ Todos os experimentos foram executados em uma instância **Ubuntu Server 22.04 L
 - **Relatório Técnico:** [`relatorio.md`](relatorio.md)
 - **Implementações Práticas:** Pasta de cada módulo contém `README.md` com o passo a passo completo
 - **Evidências:** Pasta [`evidencias/`](evidencias/) com capturas de saída de cada experimento
-- **Documentação Online:** [GitHub Pages](https://luccacc.github.io/projeto-conexoes-seguras)
+- **Documentação Online:** [GitHub Pages](https://luccalck.github.io/projeto-conexoes-seguras)
