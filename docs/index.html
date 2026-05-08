@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conexões Seguras — SENAI Felix Guisard</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --accent3: #d29922;
+      --accent4: #bc8cff;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --tag-bg: #1f2937;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #0d1117 0%, #1a2332 50%, #0d1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 72px 24px 56px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--muted);
+      padding: 4px 14px;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.5px;
+      margin-bottom: 16px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      max-width: 600px;
+      margin: 0 auto 32px;
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.85; text-decoration: none; }
+    .btn-primary { background: var(--accent); color: #0d1117; }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+
+    /* LAYOUT */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* STATS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stat {
+      background: var(--surface);
+      padding: 24px;
+      text-align: center;
+    }
+    .stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+    .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+
+    /* SECTIONS */
+    section { padding: 64px 0; }
+    section h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    section .section-sub {
+      color: var(--muted);
+      margin-bottom: 36px;
+      font-size: 0.95rem;
+    }
+
+    /* MODULE CARDS */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .module-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .module-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .module-number {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .module-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .module-card p { font-size: 0.875rem; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    .tag {
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 11px;
+      padding: 2px 8px;
+      color: var(--muted);
+      font-family: 'SFMono-Regular', Consolas, monospace;
+    }
+    .module-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* color accents per module */
+    .m1 .module-card h3 { color: #ff7b72; }
+    .m2 .module-card h3 { color: #79c0ff; }
+    .m3 .module-card h3 { color: #56d364; }
+    .m4 .module-card h3 { color: #d2a8ff; }
+    .m1 .module-link { color: #ff7b72; }
+    .m2 .module-link { color: #79c0ff; }
+    .m3 .module-link { color: #56d364; }
+    .m4 .module-link { color: #d2a8ff; }
+
+    /* FLOW */
+    .flow {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 32px;
+    }
+    .flow-steps {
+      display: flex;
+      gap: 0;
+      align-items: stretch;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .flow-step {
+      flex: 1;
+      min-width: 160px;
+      padding: 16px 20px;
+      position: relative;
+    }
+    .flow-step:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 18px;
+      z-index: 1;
+    }
+    .flow-step-num {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .flow-step h4 { font-size: 0.9rem; margin-bottom: 4px; }
+    .flow-step p { font-size: 0.8rem; color: var(--muted); }
+
+    /* DELIVERABLES */
+    .deliverables { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .deliverable {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .deliverable-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .deliverable-icon.green { background: rgba(63, 185, 80, 0.15); }
+    .deliverable-icon.blue { background: rgba(88, 166, 255, 0.15); }
+    .deliverable-icon.purple { background: rgba(188, 140, 255, 0.15); }
+    .deliverable h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+    .deliverable p { font-size: 0.8rem; color: var(--muted); }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-top: 6px;
+    }
+    .status-badge.done { background: rgba(63, 185, 80, 0.15); color: var(--accent2); }
+
+    /* EVIDENCE */
+    .evidence-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .evidence-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 12px;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      color: var(--muted);
+    }
+    .evidence-item span { display: block; font-family: inherit; color: var(--accent2); margin-bottom: 4px; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer strong { color: var(--text); }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-badge">SENAI Felix Guisard · ADS · Projeto Semestral 1/3</div>
+    <h1>Projeto <span>Conexões Seguras</span></h1>
+    <p>Documentação técnica e Provas de Conceito dos principais mecanismos de segurança em redes corporativas modernas.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://github.com/luccacc/projeto-conexoes-seguras">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        Ver Repositório
+      </a>
+      <a class="btn btn-outline" href="https://github.com/luccacc/projeto-conexoes-seguras/blob/main/relatorio.md">
+        📄 Relatório Técnico
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-value">4</div><div class="stat-label">Módulos</div></div>
+  <div class="stat"><div class="stat-value">4</div><div class="stat-label">PoCs</div></div>
+  <div class="stat"><div class="stat-value">6</div><div class="stat-label">Evidências</div></div>
+  <div class="stat"><div class="stat-value">AWS</div><div class="stat-label">Ambiente</div></div>
+  <div class="stat"><div class="stat-value">Ubuntu</div><div class="stat-label">22.04 LTS</div></div>
+</div>
+
+<!-- MODULES -->
+<section>
+  <div class="container">
+    <h2>Módulos Implementados</h2>
+    <p class="section-sub">Cada módulo contém uma Prova de Conceito completa com passo a passo reproduzível.</p>
+    <div class="modules-grid">
+
+      <div class="m1">
+        <div class="module-card">
+          <div class="module-number">Módulo 01</div>
+          <h3>Sniffing e Interceptação</h3>
+          <p>Demonstração do modo promíscuo na NIC para captura de tráfego HTTP em texto claro na Camada 2/3.</p>
+          <div class="tags">
+            <span class="tag">tcpdump</span>
+            <span class="tag">iproute2</span>
+            <span class="tag">curl</span>
+            <span class="tag">Camada 2/3</span>
+          </div>
+          <a class="module-link" href="https://github.com/luccacc/projeto-conexoes-seguras/tree/main/modulo1-sniffing">
+            Ver PoC →
+          </a>
+        </div>
+      </div>
+
+      <div class="m2">
+        <div class="module-card">
+          <div class="module-number">Módulo 02</div>
+          <h3>Criptografia Híbrida e TLS</h3>
+          <p>Simulação do Handshake TLS com RSA para troca de chaves e AES-256 para transferência de dados.</p>
+          <div class="tags">
+            <span class="tag">OpenSSL</span>
+            <span class="tag">RSA-2048</span>
+            <span class="tag">AES-256-CBC</span>
+            <span class="tag">TLS</span>
+          </div>
+          <a class="module-link" href="https://github.com/luccacc/projeto-conexoes-seguras/tree/main/modulo2-tls">
+            Ver PoC →
+          </a>
+        </div>
+      </div>
+
+      <div class="m3">
+        <div class="module-card">
+          <div class="module-number">Módulo 03</div>
+          <h3>Gestão Segura de Sessões</h3>
+          <p>Comparação entre cookies SessionID inseguros e seguros, demonstrando Session Hijacking e mitigações.</p>
+          <div class="tags">
+            <span class="tag">Node.js</span>
+            <span class="tag">Express</span>
+            <span class="tag">HttpOnly</span>
+            <span class="tag">Secure</span>
+          </div>
+          <a class="module-link" href="https://github.com/luccacc/projeto-conexoes-seguras/tree/main/modulo3-sessao">
+            Ver PoC →
+          </a>
+        </div>
+      </div>
+
+      <div class="m4">
+        <div class="module-card">
+          <div class="module-number">Módulo 04</div>
+          <h3>Tunelamento VPN</h3>
+          <p>Criação de túnel VPN criptografado com WireGuard, evidenciando payload ilegível para interceptadores externos.</p>
+          <div class="tags">
+            <span class="tag">WireGuard</span>
+            <span class="tag">Curve25519</span>
+            <span class="tag">ChaCha20</span>
+            <span class="tag">UDP</span>
+          </div>
+          <a class="module-link" href="https://github.com/luccacc/projeto-conexoes-seguras/tree/main/modulo4-vpn">
+            Ver PoC →
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- STRUCTURE -->
+<section style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 56px 0;">
+  <div class="container">
+    <h2>Estrutura das Demonstrações Práticas</h2>
+    <p class="section-sub">Cada PoC segue o padrão definido pelo projeto.</p>
+    <div class="flow">
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-step-num">01</div>
+          <h4>Ferramenta Usada</h4>
+          <p>Identificação das ferramentas e bibliotecas utilizadas no experimento</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">02</div>
+          <h4>Passo a Passo</h4>
+          <p>Roteiro completo e reproduzível com todos os comandos necessários</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">03</div>
+          <h4>Resultado</h4>
+          <p>Saída obtida no terminal com evidência visual da execução</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">04</div>
+          <h4>Explicação Técnica</h4>
+          <p>Análise do resultado com fundamentos teóricos e resposta às questões</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DELIVERABLES -->
+<section>
+  <div class="container">
+    <h2>Entregas do Projeto</h2>
+    <p class="section-sub">Itens obrigatórios conforme especificação do projeto semestral.</p>
+    <div class="deliverables">
+      <div class="deliverable">
+        <div class="deliverable-icon green">📋</div>
+        <div>
+          <h4>Relatório Técnico</h4>
+          <p>Documentação completa de todas as PoCs com estrutura Ferramenta → Passo a Passo → Resultado → Explicação Técnica.</p>
+          <span class="status-badge done">✓ Entregue</span>
+        </div>
+      </div>
+      <div class="deliverable">
+        <div class="deliverable-icon blue">🔬</div>
+        <div>
+          <h4>Implementações Práticas</h4>
+          <p>4 Provas de Conceito completas e reproduzíveis, uma por módulo, com evidências visuais.</p>
+          <span class="status-badge done">✓ Entregue</span>
+        </div>
+      </div>
+      <div class="deliverable">
+        <div class="deliverable-icon purple">🌐</div>
+        <div>
+          <h4>GitHub Pages</h4>
+          <p>Documentação online com links para o repositório e descrição de cada módulo implementado.</p>
+          <span class="status-badge done">✓ Entregue</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EVIDENCE -->
+<section style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 56px 0;">
+  <div class="container">
+    <h2>Evidências</h2>
+    <p class="section-sub">Capturas de saída de cada experimento, disponíveis na pasta <code style="background:var(--tag-bg);padding:2px 6px;border-radius:4px;font-size:12px;">evidencias/</code>.</p>
+    <div class="evidence-grid">
+      <div class="evidence-item"><span>Módulo 1</span>comandom1.png — Comandos executados</div>
+      <div class="evidence-item"><span>Módulo 1</span>resultadom1.png — Tráfego HTTP interceptado</div>
+      <div class="evidence-item"><span>Módulo 2</span>comandosm2.png — Handshake OpenSSL</div>
+      <div class="evidence-item"><span>Módulo 3</span>cookiesm3.png — Comparação de cabeçalhos</div>
+      <div class="evidence-item"><span>Módulo 3</span>iniciarm3.png — Inicialização do servidor</div>
+      <div class="evidence-item"><span>Módulo 3</span>serverm3.png — Resposta do servidor Express</div>
+    </div>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted);">
+      <a href="https://github.com/luccacc/projeto-conexoes-seguras/tree/main/evidencias">Ver todas as evidências no repositório →</a>
+    </p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p>
+      <strong>Projeto Conexões Seguras</strong> · Parte 1/3<br>
+      Faculdade de Tecnologia SENAI Felix Guisard · Curso Superior de ADS · 2026<br>
+      <a href="https://github.com/luccacc/projeto-conexoes-seguras" style="color:var(--muted);">github.com/luccacc/projeto-conexoes-seguras</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
