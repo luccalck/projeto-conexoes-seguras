@@ -8,7 +8,7 @@ Projeto Semestral — Parte 1/3 | Data de entrega: Maio de 2026
 
 ## Introdução
 
-Este relatório documenta as **Provas de Conceito (PoCs)** desenvolvidas para o projeto *Conexões Seguras*, cobrindo quatro mecanismos fundamentais de segurança em redes corporativas modernas. O objetivo é demonstrar na prática tanto as vulnerabilidades de protocolos e configurações legadas quanto a eficácia das arquiteturas modernas de proteção.
+Este relatório documenta as **Provas de Conceito (PoCs)** desenvolvidas para o projeto *Conexões Seguras*, cobrindo três mecanismos fundamentais de segurança em redes corporativas modernas. O objetivo é demonstrar na prática tanto as vulnerabilidades de protocolos e configurações legadas quanto a eficácia das arquiteturas modernas de proteção.
 
 **Ambiente de laboratório:** Instância Ubuntu Server 22.04 LTS provisionada na infraestrutura AWS (Cloud9/EC2, tipo t3.micro), garantindo um ambiente isolado e reproduzível para todos os experimentos.
 
@@ -94,41 +94,14 @@ O risco crítico para o desenvolvedor é o **Session Hijacking**: se o cookie tr
 
 ---
 
-## Módulo 4: Tunelamento Seguro com WireGuard (VPN)
-
-**Ferramenta Usada:** `WireGuard`, `iproute2`, `tcpdump`
-
-### Passo a Passo
-
-1. Instalação do WireGuard via `sudo apt install wireguard wireguard-tools -y`
-2. Geração de pares de chaves Curve25519 para o servidor (`wg0`) e o cliente (`wg1`): `wg genkey | tee private.key | wg pubkey > public.key`
-3. Criação e configuração das interfaces virtuais WireGuard com endereços `10.0.0.1/24` (servidor) e `10.0.0.2/24` (cliente)
-4. Ativação das interfaces: `sudo wg-quick up wg0` / `sudo ip link set up dev wg1`
-5. Verificação do status do túnel: `sudo wg show`
-6. Teste de conectividade: `ping -c 4 10.0.0.1` pelo túnel
-7. Captura simultânea do tráfego na interface física com `tcpdump`: `sudo tcpdump -i ens5 -nn -A udp port 51820`
-
-### Resultado
-
-O `ping` pelo endereço virtual `10.0.0.1` retornou respostas com sucesso, confirmando o tunelamento. A captura simultânea com `tcpdump` na interface física (`ens5`) revelou apenas **datagramas UDP binários ilegíveis** na porta 51820 — o payload real dos pacotes ICMP estava completamente criptografado com **ChaCha20-Poly1305** dentro do túnel WireGuard.
-
-### Explicação Técnica do Resultado
-
-O WireGuard opera na Camada 3 (Rede) como driver de kernel, criando interfaces de rede virtuais. Todo pacote IP roteado para um peer configurado é automaticamente **encapsulado em UDP** e **criptografado com ChaCha20-Poly1305** usando chaves derivadas via Curve25519 (ECDH). Para qualquer observador na rede física, o tráfego aparece como datagramas UDP opacos — o conteúdo real é matematicamente inacessível sem as chaves privadas dos peers.
-
-A VPN complementa as camadas anteriores: mesmo que uma aplicação inadvertidamente use HTTP (vulnerabilidade do Módulo 1) ou cookies sem `Secure` (Módulo 3), o túnel WireGuard garante que o tráfego permaneça criptografado para observadores externos. Em redes corporativas, VPNs são essenciais para proteger conexões de colaboradores remotos e interligar filiais de forma segura sobre infraestrutura de rede pública não confiável.
-
----
-
 ## Conclusão
 
-As quatro Provas de Conceito desenvolvidas demonstram uma visão integrada da segurança em camadas (*Defense in Depth*):
+As três Provas de Conceito desenvolvidas demonstram uma visão integrada da segurança em camadas (*Defense in Depth*):
 
 | Módulo | Camada OSI | Ameaça Demonstrada | Mitigação |
 |--------|------------|-------------------|-----------|
 | 1 — Sniffing | Camada 2/3 | Interceptação passiva de tráfego em texto claro | Uso obrigatório de TLS/HTTPS |
 | 2 — TLS | Camada 4/5 | Custo computacional inviável de RSA puro | Criptografia Híbrida (RSA + AES) |
 | 3 — Sessões | Camada 7 | Session Hijacking via HTTP e XSS | HTTPS + flags `Secure` e `HttpOnly` |
-| 4 — VPN | Camada 3 | Exposição em redes não confiáveis | Tunelamento WireGuard (ChaCha20) |
 
-Os experimentos evidenciam que a segurança não é responsabilidade de uma única tecnologia, mas o resultado da aplicação correta de múltiplos mecanismos complementares em cada camada da pilha de comunicação. A transição de HTTP para HTTPS, aliada à gestão adequada de sessões e ao uso de VPNs em redes corporativas, forma a base mínima de segurança exigida em ambientes de produção modernos.
+Os experimentos evidenciam que a segurança não é responsabilidade de uma única tecnologia, mas o resultado da aplicação correta de múltiplos mecanismos complementares em cada camada da pilha de comunicação. A transição de HTTP para HTTPS, aliada à gestão adequada de sessões na camada de aplicação, forma a base essencial de segurança exigida em ambientes de produção modernos.
